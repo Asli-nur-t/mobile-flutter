@@ -1,16 +1,22 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'bottom_navigation.dart';
-
+import 'package:http/http.dart' as http;
+import 'package:nova_ornek/all_tasks_screen.dart';
+import 'package:nova_ornek/todo_service.dart';
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int totalTasks = 0;
-  int completedTasks = 0;
-  int pendingTasks = 0;
   int _currentIndex = 0;
+  TextEditingController titleController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
+
+  // TodoService sınıfını bir değişken olarak ekleyin
+  TodoService _todoService = TodoService();
 
   @override
   Widget build(BuildContext context) {
@@ -19,59 +25,94 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text('Todo App'),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              'Toplam Görev: $totalTasks',
-              style: TextStyle(fontSize: 18),
-            ),
-            Text(
-              'Tamamlanan Görev: $completedTasks',
-              style: TextStyle(fontSize: 18),
-            ),
-            Text(
-              'Bekleyen Görev: $pendingTasks',
-              style: TextStyle(fontSize: 18),
+            TextField(
+              controller: titleController,
+              decoration: InputDecoration(hintText: 'Title'),
             ),
             SizedBox(height: 20),
-            Text(
-              'Bekleyen Görevler:',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            TextField(
+              controller: descriptionController,
+              decoration: InputDecoration(hintText: 'Description'),
+              keyboardType: TextInputType.multiline,
+              minLines: 5,
+              maxLines: 8,
             ),
-            // Buraya ListView ekleyerek bekleyen son 3 görevi listeleyebilirsiniz.
-            // Örneğin:
-             ListView.builder(
-               itemCount: 3,
-               itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text('Görev $index'),
-                subtitle: Text('Görev açıklaması $index'),
-                 );
-              },
-             ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: submitData,
+              child: Text('Submit'),
+            ),
           ],
         ),
       ),
       bottomNavigationBar: BottomNavigation(
         currentIndex: _currentIndex,
-        onTap: (index) {
+        onTap: (index) async{
           setState(() {
             _currentIndex = index;
           });
 
-          // Burada index'e göre ilgili sayfaya geçiş yapabilirsiniz.
-          // Örneğin:
-           if (index == 0) {
-             Navigator.pushReplacementNamed(context, '/');
-           } else if (index == 1) {
-             Navigator.pushReplacementNamed(context, '/new_task');
-           } else if (index == 2) {
-            Navigator.pushReplacementNamed(context, '/all_tasks');
-           }
+          // navbar geçişi
+          if (_currentIndex == 2) {
+            await _fetchTodoList(); // Fetch todo list before navigating
+            print(_fetchTodoList());
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => AllTasksScreen(todoList: _todoService.todoList)),
+            );
+
+          }
         },
       ),
     );
   }
+
+  Future<void> submitData() async {
+    final title = titleController.text;
+    final description = descriptionController.text;
+    final body = {
+      "title": title,
+      "description": description,
+      "is_completed": false,
+    };
+
+    final url = "https://api.nstack.in/v1/todos";
+    final uri = Uri.parse(url);
+    final response = await http.post(
+      uri,
+      body: jsonEncode(body),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 201) {
+      // Eğer başarıyla eklenirse, ekledikten sonra todo listesini güncelle
+      await _fetchTodoList();
+      print("Todo added successfully");
+    } else {
+      print("Failed to add todo. Response: ${response.statusCode}");
+    }
+
+    // Ekledikten sonra text alanlarını temizle
+    titleController.clear();
+    descriptionController.clear();
+  }
+
+  Future<void> _fetchTodoList() async {
+    try {
+      // Todo listesini güncelle
+      await _todoService.fetchTodos();
+      // setState ile liste güncellenecek ve ekran yenilenecek
+      setState(() {});
+    } catch (e) {
+      print("Error fetching todo list: $e");
+    }
+  }
+
 }
+
+
+
