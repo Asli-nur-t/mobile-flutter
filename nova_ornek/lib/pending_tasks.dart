@@ -4,6 +4,7 @@ import 'package:nova_ornek/add_page.dart';
 import 'package:nova_ornek/snackbar_helpers.dart';
 import 'package:nova_ornek/todo_card.dart';
 import 'package:nova_ornek/bottom_navigation.dart';
+import 'package:nova_ornek/home_screen.dart';
 class TodoListPage extends StatefulWidget {
   const TodoListPage({
     super.key,
@@ -53,26 +54,23 @@ class _TodoListPageState extends State<TodoListPage> {
 
       bottomNavigationBar: BottomNavigation(
         currentIndex: _currentIndex,
-        onTap: (index) async{
+        onTap: (index) async {
           setState(() {
             _currentIndex = index;
           });
 
-          // navbar geçişi
+          // Navbar geçişi
           if (_currentIndex == 1) {
-
-            //Navigator.push(
-
-
-           // );
-
+            // The "Add Todo" tab is selected
+            navigateToAddPage();
           }
         },
       ),
-      floatingActionButton: FloatingActionButton.extended(
+
+     /* floatingActionButton: FloatingActionButton.extended(
           onPressed: navigateToAddPage,
           icon: Icon(Icons.add),
-          label: Text('Add Todo')),
+          label: Text('Add Todo')),*/
     );
   }
 
