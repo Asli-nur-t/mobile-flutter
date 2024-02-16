@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nova_ornek/all_tasks_screen.dart';
 import 'package:nova_ornek/home_screen.dart';
+import 'package:nova_ornek/pending_tasks.dart';
 void main() {
   runApp(const MyApp());
 }
@@ -13,7 +14,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark(), // Add a comma here
-      home: HomeScreen(),
+      home: TodoListPage(),
     );
   }
 }
