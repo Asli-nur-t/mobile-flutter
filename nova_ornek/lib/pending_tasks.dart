@@ -63,7 +63,12 @@ class _TodoListPageState extends State<TodoListPage> {
           if (_currentIndex == 1) {
             // The "Add Todo" tab is selected
             navigateToAddPage();
+          }else if(_currentIndex == 2) {
+            navigateToTodoHomePage();
+          }else{
+            navigateToTodoListPage();
           }
+
         },
       ),
 
@@ -125,4 +130,21 @@ class _TodoListPageState extends State<TodoListPage> {
       isloading = false;
     });
   }
+
+  void navigateToTodoHomePage() async {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => HomePage()),
+    );
+  }
+
+  void navigateToTodoListPage() async {
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => TodoListPage()),
+      );
+
+  }
 }
+
