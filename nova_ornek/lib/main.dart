@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-
+import 'package:nova_ornek/all_tasks_screen.dart';
+import 'package:nova_ornek/home_screen.dart';
 void main() {
   runApp(const MyApp());
 }
@@ -7,20 +8,16 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Digi Nova',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: LoginPage(), // Giriş sayfasını burada belirtin
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData.dark(), // Add a comma here
+      home: HomeScreen(),
     );
   }
-
 }
-
+/*
 class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -158,3 +155,4 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+*/
